@@ -10,6 +10,19 @@ fi
 # Configure env variables
 source env.sh
 
+# Redirect output to log file
+exec >> ${WORKINGDIR}/deploy.log
+exec 2>&1
+
+sudo chown ${username}:${usergid} ${WORKINGDIR}/ -R
+cd $WORKINGDIR
+
+mkdir -p $KUBEHOME
+export KUBECONFIG=$KUBEHOME/admin.conf
+# make SSH shells play nice
+sudo chsh -s /bin/bash $username
+echo "export KUBECONFIG=${KUBECONFIG}" > $HOME/.profile
+
 # Install K8s, Docker and dependencies
 ./install_kubernetes.sh $K8S_VERSION
 
