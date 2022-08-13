@@ -1,7 +1,6 @@
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 clusterName: PowderK8s
-kubernetesVersion: v1.23.5
 controllerManager:
   extraArgs:
     horizontal-pod-autoscaler-downscale-stabilization: "10s"
