@@ -1,5 +1,3 @@
-#/bin/bash
-
 K8S_VERSION="1.23.5-00"
 SCRIPTDIR=$(dirname "$0")
 WORKINGDIR='/local/repository'
@@ -56,3 +54,5 @@ sudo apt-get -y install kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_V
 sudo docker version
 # Disable swapoff
 sudo swapoff -a
+
+echo "Kubernetes and Docker installed."
