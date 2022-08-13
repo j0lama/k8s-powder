@@ -48,6 +48,9 @@ export PATH=$PATH:$GOPATH/bin
 sudo go get -u github.com/simeji/jid/cmd/jid
 sudo go build -o /usr/bin/jid github.com/simeji/jid/cmd/jid
 
+# Allow scheduling of pods on master
+kubectl taint node master node-role.kubernetes.io/master:NoSchedule-
+
 # install static cni plugin
 sudo go get -u github.com/containernetworking/plugins/plugins/ipam/static
 sudo go build -o /opt/cni/bin/static github.com/containernetworking/plugins/plugins/ipam/static

@@ -1,5 +1,7 @@
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
+clusterName: PowderK8s
+kubernetesVersion: v1.23.5
 controllerManager:
   extraArgs:
     horizontal-pod-autoscaler-downscale-stabilization: "10s"
@@ -8,4 +10,11 @@ apiServer:
     feature-gates: SCTPSupport=true
     service-node-port-range: 30000-39000
 networking:
-  podSubnet: "10.10.0.0/16"
+  podSubnet: "10.244.0.0/16"
+  serviceSubnet: "10.96.0.0/12"
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
+#topologyManagerScope: pod
+#topologyManagerPolicy: single-numa-node
