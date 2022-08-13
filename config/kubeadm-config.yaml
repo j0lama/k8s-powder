@@ -1,4 +1,4 @@
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 clusterName: PowderK8s
 controllerManager:
@@ -11,9 +11,9 @@ apiServer:
 networking:
   podSubnet: "10.244.0.0/16"
   serviceSubnet: "10.96.0.0/12"
----
-kind: KubeletConfiguration
-apiVersion: kubelet.config.k8s.io/v1beta1
-cgroupDriver: cgroupfs
+#---
+#kind: KubeletConfiguration
+#apiVersion: kubelet.config.k8s.io/v1beta1
+#cgroupDriver: cgroupfs
 #topologyManagerScope: pod
 #topologyManagerPolicy: single-numa-node
