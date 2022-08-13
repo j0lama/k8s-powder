@@ -41,15 +41,8 @@ sudo kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.
 echo "Running proxy at port 8080..."
 sudo kubectl proxy  --kubeconfig=${KUBEHOME}/admin.conf -p 8080 &
 
-# jid for json parsing.
-export GOPATH=${WORKINGDIR}/go/gopath
-mkdir -p $GOPATH
-export PATH=$PATH:$GOPATH/bin
-sudo go get -u github.com/simeji/jid/cmd/jid
-sudo go build -o /usr/bin/jid github.com/simeji/jid/cmd/jid
-
 # Allow scheduling of pods on master
-kubectl taint node master node-role.kubernetes.io/master:NoSchedule-
+kubectl taint node $(kubectl get nodes -o json | jq -r .items[0].metadata.name) node-role.kubernetes.io/master:NoSchedule-
 
 # install static cni plugin
 sudo go get -u github.com/containernetworking/plugins/plugins/ipam/static
@@ -71,20 +64,10 @@ joined_cnt=$(( `kubectl get nodes | wc -l` - 1 ))
 echo "Total nodes: $node_cnt Joined: ${joined_cnt}"
 while [ $node_cnt -ne $joined_cnt ]
 do 
-    joined_cnt=$(( `kubectl get nodes |wc -l` - 1 ))
+    joined_cnt=$(( `kubectl get nodes | wc -l` - 1 ))
     sleep 1
 done
 echo "All nodes joined"
-
-dashboard_endpoint=`kubectl get endpoints --all-namespaces |grep dashboard|awk '{print $3}'`
-dashboard_credential=`kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}') |grep token: | awk '{print $2}'`
-
-echo "Kubernetes is ready at: http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login"
-
-# optional address
-echo "kubernetes dashboard endpoint: $dashboard_endpoint"
-# dashboard credential
-echo "And this is the dashboard credential: $dashboard_credential"
 
 #Deploy metrics server
 sudo kubectl create -f config/metrics-server.yaml

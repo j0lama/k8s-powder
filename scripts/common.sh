@@ -34,7 +34,7 @@ sudo add-apt-repository \
 sudo apt-get update
 
 # Install pre-reqs
-sudo apt-get -y install build-essential libffi-dev python python-dev python-pip automake autoconf libtool indent vim tmux xgrep #ctags jq
+sudo apt-get -y install build-essential libffi-dev python python-dev python-pip automake autoconf libtool indent vim tmux xgrep jq #ctags
 
 # pre-reqs for installing docker
 sudo apt-get -y install \
