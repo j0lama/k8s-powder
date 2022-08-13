@@ -7,11 +7,8 @@ if [ -f /local/repository/slave-ready ]; then
     exit 0
 fi
 
-# Env variables
-source /local/repository/scripts/env.sh
-
-# Install K8s, Docker and dependencies
-./scripts/install_kubernetes.sh $K8S_VERSION
+# Set env variables & install K8s, Docker and dependencies
+source /local/repository/scripts/common.sh
 
 # use geni-get for shared rsa key
 # see http://docs.powderwireless.net/advanced-topics.html
