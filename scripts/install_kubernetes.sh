@@ -25,6 +25,9 @@ sudo apt-get -y install \
     gnupg-agent \
     software-properties-common
 
+# Disable swapoff
+sudo swapoff -a
+
 # docker
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 
@@ -32,7 +35,5 @@ sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 sudo apt-get -y install kubelet=$1 kubeadm=$1 kubectl=$1 kubernetes-cni golang-go
 # Print Docker version
 sudo docker version
-# Disable swapoff
-sudo swapoff -a
 
 echo "Kubernetes and Docker installed"
