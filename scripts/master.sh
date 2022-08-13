@@ -7,8 +7,14 @@ if [ -f /local/repository/master-ready ]; then
     exit 0
 fi
 
-# Configure env variables
-source env.sh
+# Env variables
+K8S_VERSION="1.23.5-00"
+SCRIPTDIR=$(dirname "$0")
+WORKINGDIR='/local/repository'
+username=$(id -un)
+HOME=/users/$(id -un)
+usergid=$(id -ng)
+KUBEHOME="${WORKINGDIR}/kube"
 
 # Redirect output to log file
 exec >> ${WORKINGDIR}/deploy.log
