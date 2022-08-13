@@ -2,68 +2,14 @@
 #set -u
 #set -x
 
-SCRIPTDIR=$(dirname "$0")
-WORKINGDIR='/local/repository'
-username=$(id -nu)
-HOME=/users/$(id -un)
-usergid=$(id -ng)
-experimentid=$(hostname|cut -d '.' -f 2)
-projectid=$usergid
+# Ensure this script is run once
+if [ -f /local/repository/master-ready ]; then
+    exit 0
+fi
 
-sudo chown ${username}:${usergid} ${WORKINGDIR}/ -R
-cd $WORKINGDIR
-# Redirect output to log file
-exec >> ${WORKINGDIR}/deploy.log
-exec 2>&1
+# Install K8s, Docker and dependencies
+source common.sh
 
-KUBEHOME="${WORKINGDIR}/kube"
-mkdir -p $KUBEHOME
-export KUBECONFIG=$KUBEHOME/admin.conf
-
-# make SSH shells play nice
-sudo chsh -s /bin/bash $username
-echo "export KUBECONFIG=${KUBECONFIG}" > $HOME/.profile
-
-# add repositories
-# Kubernetes
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-sudo add-apt-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-# Docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-
-# Update apt lists
-sudo apt-get update
-
-# Install pre-reqs
-sudo apt-get -y install build-essential libffi-dev python python-dev  \
-python-pip automake autoconf libtool indent vim tmux ctags xgrep
-
-# pre-reqs for installing docker
-sudo apt-get -y install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
-
-# docker
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io
-
-# learn from this: https://blog.csdn.net/yan234280533/article/details/75136630
-# more info should see: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
-sudo apt-get -y install kubelet=1.21.3-00 kubeadm=1.21.3-00 kubectl=1.21.3-00 kubernetes-cni golang-go jq
-
-sudo docker version
-
-# Solving issues with cgroup-drivers
-#echo '{"exec-opts": ["native.cgroupdriver=systemd"]}' | sudo tee /etc/docker/daemon.json
-#sudo systemctl restart docker
-
-sudo swapoff -a
 sudo kubeadm init --config=config/kubeadm-config.yaml
 
 # result will be like:  kubeadm join 155.98.36.111:6443 --token i0peso.pzk3vriw1iz06ruj --discovery-token-ca-cert-hash sha256:19c5fdee6189106f9cb5b622872fe4ac378f275a9d2d2b6de936848215847b98
@@ -139,12 +85,9 @@ echo "And this is the dashboard credential: $dashboard_credential"
 
 #Deploy metrics server
 sudo kubectl create -f config/metrics-server.yaml
-# Deploy emulator
-sudo kubectl create -f config/deployment.yaml
-
-# Log all the traffic on the Nervion master node
-#sudo tcpdump -i any -w ~/tcpdump.pcap &
 
 # to know how much time it takes to instantiate everything.
 echo "Setup DONE!"
 date
+
+touch /local/repository/master-ready
