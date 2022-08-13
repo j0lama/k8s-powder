@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-kube_description= "Phobos Powder profile"
+kube_description= "K8s Powder profile"
 kube_instruction= "To be done"
 
 #
