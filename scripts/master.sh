@@ -34,10 +34,6 @@ source <(kubectl completion bash)
 # Allow scheduling of pods on master
 kubectl taint node $(kubectl get nodes -o json | jq -r .items[0].metadata.name) node-role.kubernetes.io/master:NoSchedule-
 
-# install static cni plugin
-sudo go get -u github.com/containernetworking/plugins/plugins/ipam/static
-sudo go build -o /opt/cni/bin/static github.com/containernetworking/plugins/plugins/ipam/static
-
 # install helm
 echo "Installing Helm"
 wget https://get.helm.sh/helm-v3.1.0-linux-amd64.tar.gz

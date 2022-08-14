@@ -68,11 +68,17 @@ sudo containerd config default | sudo tee /etc/containerd/config.toml
 # Set containerd cgroup driver to systemd
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 # Restart containerd daemon
+sudo systemctl daemon-reload
+sudo systemctl enable containerd
 sudo systemctl restart containerd
 
 ##############
 # Kubernetes #
 ##############
-sudo apt-get -y install kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_VERSION kubernetes-cni golang-go
+sudo apt-get -y install kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_VERSION
+# Prevent packages from being modified
+sudo apt-mark hold kubelet kubeadm kubectl
 
-echo "Kubernetes and Docker installed"
+sudo systemctl enable kubelet.service
+
+echo "Kubernetes and Containerd installed"

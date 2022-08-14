@@ -25,19 +25,12 @@ done
 sudo kubeadm join master:6443 --token $master_token --discovery-token-unsafe-skip-ca-verification 
 
 # patch the kubelet to force --resolv-conf=''
-sudo sed -i 's#Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"#Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml --resolv-conf=''"#g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-sudo systemctl daemon-reload 
-sudo systemctl restart kubelet.service
-
-# install static cni plugin
-export GOPATH=${WORKINGDIR}/go/gopath
-mkdir -p $GOPATH
-export PATH=$PATH:$GOPATH/bin
-sudo go get -u github.com/containernetworking/plugins/plugins/ipam/static
-sudo go build -o /opt/cni/bin/static github.com/containernetworking/plugins/plugins/ipam/static
+# sudo sed -i 's#Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"#Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml --resolv-conf=''"#g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+# sudo systemctl daemon-reload 
+# sudo systemctl restart kubelet.service
 
 # install a crontab to permanently save all Nervion logs
-crontab -l | { cat; echo "* * * * * /local/repository/config/test/savelogs.py"; } | crontab -
+#crontab -l | { cat; echo "* * * * * /local/repository/config/test/savelogs.py"; } | crontab -
 
 # if it complains that "[ERROR Port-10250]: Port 10250 is in use", kill the process.
 # if it complains some file already exist, remove those. [ERROR FileAvailable--etc-kubernetes-pki-ca.crt]: /etc/kubernetes/pki/ca.crt already exists
