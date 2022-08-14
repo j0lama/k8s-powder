@@ -1,5 +1,5 @@
 kind: ClusterConfiguration
-apiVersion: kubeadm.k8s.io/v1beta3
+apiVersion: kubeadm.k8s.io/v1beta2
 clusterName: PowderK8s
 controllerManager:
   extraArgs:

@@ -56,10 +56,9 @@ sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 # Print Docker version
 sudo docker version
 # Change cgroup driver to systemd
-mkdir /etc/docker
-cat &lt;&lt;EOF | sudo tee /etc/docker/daemon.json
+cat <<EOF | sudo tee /etc/docker/daemon.json
 {
-  "exec-opts": &#91;"native.cgroupdriver=systemd"],
+  "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "100m"
