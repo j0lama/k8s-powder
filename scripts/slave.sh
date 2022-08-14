@@ -7,7 +7,7 @@ if [ -f /local/repository/slave-ready ]; then
     exit 0
 fi
 
-# Set env variables & install K8s, Docker and dependencies
+# Set env variables & install K8s, containerd and dependencies
 source /local/repository/scripts/common.sh
 
 # use geni-get for shared rsa key

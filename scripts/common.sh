@@ -24,12 +24,6 @@ export KUBECONFIG=$KUBEHOME/admin.conf
 # Kubernetes
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-# Docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
 
 # Update apt lists
 sudo apt-get update
@@ -48,26 +42,37 @@ sudo apt-get -y install \
 # Disable swapoff
 sudo swapoff -a
 
-# Kubernetes
-sudo apt-get -y install kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_VERSION kubernetes-cni golang-go
-
-# Docker
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io
-# Print Docker version
-sudo docker version
-# Change cgroup driver to systemd
-cat <<EOF | sudo tee /etc/docker/daemon.json
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
-}
+##############
+# Containerd #
+##############
+# Configure required modules
+sudo modprobe overlay
+sudo modprobe br_netfilter
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
 EOF
-sudo systemctl enable docker
-sudo systemctl daemon-reload
-sudo systemctl restart docker
+# Configure required sysctl to persist across system reboots
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+# Apply sysctl parameters without reboot to current running enviroment
+sudo sysctl --system
+# Install containerd
+sudo apt-get install -y containerd
+# Create configuration file
+sudo mkdir -p /etc/containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+# Set containerd cgroup driver to systemd
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+# Restart containerd daemon
+sudo systemctl restart containerd
+
+##############
+# Kubernetes #
+##############
+sudo apt-get -y install kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_VERSION kubernetes-cni golang-go
 
 echo "Kubernetes and Docker installed"
