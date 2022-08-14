@@ -6,6 +6,9 @@ HOME=/users/$(id -un)
 usergid=$(id -ng)
 KUBEHOME="${WORKINGDIR}/kube"
 
+# Change login shell for
+sudo chsh -s /bin/bash $username
+
 # Redirect output to log file
 exec >> ${WORKINGDIR}/deploy.log
 exec 2>&1
@@ -15,8 +18,6 @@ cd $WORKINGDIR
 
 mkdir -p $KUBEHOME
 export KUBECONFIG=$KUBEHOME/admin.conf
-# make SSH shells play nice
-sudo chsh -s /bin/bash $username
 #echo "export KUBECONFIG=${KUBECONFIG}" > $HOME/.profile
 
 # Add repositories
@@ -47,12 +48,27 @@ sudo apt-get -y install \
 # Disable swapoff
 sudo swapoff -a
 
-# docker
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io
-
-# more info should see: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
+# Kubernetes
 sudo apt-get -y install kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_VERSION kubernetes-cni golang-go
+
+# Docker
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 # Print Docker version
 sudo docker version
+# Change cgroup driver to systemd
+mkdir /etc/docker
+cat &lt;&lt;EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": &#91;"native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+sudo systemctl enable docker
+sudo systemctl daemon-reload
+sudo systemctl restart docker
 
 echo "Kubernetes and Docker installed"
