@@ -31,16 +31,6 @@ sudo kubectl apply -f /local/repository/config/flannel-network-conf.yaml
 # use this to enable autocomplete
 source <(kubectl completion bash)
 
-# kubectl get nodes --kubeconfig=${KUBEHOME}/admin.conf -s https://155.98.36.111:6443
-# Install dashboard: https://github.com/kubernetes/dashboard
-# TODO: why are we using this specific release? Would the latest get us anything?
-echo "Launching Kubernetes Dashboard..."
-sudo kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
- 
-# run the proxy to make the dashboard portal accessible from outside
-echo "Running proxy at port 8080..."
-sudo kubectl proxy  --kubeconfig=${KUBEHOME}/admin.conf -p 8080 &
-
 # Allow scheduling of pods on master
 kubectl taint node $(kubectl get nodes -o json | jq -r .items[0].metadata.name) node-role.kubernetes.io/master:NoSchedule-
 
@@ -61,10 +51,10 @@ source <(helm completion bash)
 node_cnt=$(($(/local/repository/scripts/geni-get-param.sh computeNodeCount) + 1))
 # 1 node per line - header line
 joined_cnt=$(( `kubectl get nodes | wc -l` - 1 ))
-echo "Total nodes: $node_cnt Joined: ${joined_cnt}"
 while [ $node_cnt -ne $joined_cnt ]
 do 
     joined_cnt=$(( `kubectl get nodes | wc -l` - 1 ))
+    echo "Total nodes: $node_cnt Joined: ${joined_cnt}"
     sleep 1
 done
 echo "All nodes joined"
