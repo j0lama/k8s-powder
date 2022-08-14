@@ -17,7 +17,7 @@ mkdir -p $KUBEHOME
 export KUBECONFIG=$KUBEHOME/admin.conf
 # make SSH shells play nice
 sudo chsh -s /bin/bash $username
-echo "export KUBECONFIG=${KUBECONFIG}" > $HOME/.profile
+#echo "export KUBECONFIG=${KUBECONFIG}" > $HOME/.profile
 
 # Add repositories
 # Kubernetes

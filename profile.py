@@ -53,7 +53,7 @@ kube_m.Site('Kubernetes')
 iface = kube_m.addInterface()
 iface.addAddress(PG.IPv4Address("192.168.1.1", netmask))
 network.addInterface(iface)
-kube_m.addService(PG.Execute(shell="bash", command="/local/repository/scripts/master.sh"))
+#kube_m.addService(PG.Execute(shell="bash", command="/local/repository/scripts/master.sh"))
 
 # Nervion Slaves
 for i in range(0,params.computeNodeCount):
@@ -65,7 +65,7 @@ for i in range(0,params.computeNodeCount):
     iface = kube_s.addInterface()
     iface.addAddress(PG.IPv4Address("192.168.1." + str(i+2), netmask))
     network.addInterface(iface)
-    kube_s.addService(PG.Execute(shell="bash", command="/local/repository/scripts/slave.sh"))
+    #kube_s.addService(PG.Execute(shell="bash", command="/local/repository/scripts/slave.sh"))
 
 
 #
