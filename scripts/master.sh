@@ -12,8 +12,6 @@ source /local/repository/scripts/common.sh
 
 sudo kubeadm init --config=config/kubeadm-config.yaml
 
-# result will be like:  kubeadm join 155.98.36.111:6443 --token i0peso.pzk3vriw1iz06ruj --discovery-token-ca-cert-hash sha256:19c5fdee6189106f9cb5b622872fe4ac378f275a9d2d2b6de936848215847b98
-
 # allow sN to log in with shared key
 # see http://docs.powderwireless.net/advanced-topics.html
 geni-get key > ${HOME}/.ssh/id_rsa
@@ -28,9 +26,6 @@ sudo chown ${username}:${usergid} $KUBEHOME/admin.conf
 # Install Flannel. See https://github.com/coreos/flannel
 sudo kubectl apply -f /local/repository/config/flannel-network-conf.yaml
 
-# use this to enable autocomplete
-source <(kubectl completion bash)
-
 # Allow scheduling of pods on master
 kubectl taint node $(kubectl get nodes -o json | jq -r .items[0].metadata.name) node-role.kubernetes.io/master:NoSchedule-
 
@@ -39,8 +34,6 @@ echo "Installing Helm"
 wget https://get.helm.sh/helm-v3.1.0-linux-amd64.tar.gz
 tar xf helm-v3.1.0-linux-amd64.tar.gz
 sudo cp linux-amd64/helm /usr/local/bin/helm
-
-source <(helm completion bash)
 
 # Wait till the slave nodes get joined and update the kubelet daemon successfully
 # number of slaves + 1 master

@@ -6,7 +6,7 @@ HOME=/users/$(id -un)
 usergid=$(id -ng)
 KUBEHOME="${WORKINGDIR}/kube"
 
-# Change login shell for
+# Change login shell for user
 sudo chsh -s /bin/bash $username
 
 # Redirect output to log file
@@ -18,7 +18,7 @@ cd $WORKINGDIR
 
 mkdir -p $KUBEHOME
 export KUBECONFIG=$KUBEHOME/admin.conf
-#echo "export KUBECONFIG=${KUBECONFIG}" > $HOME/.profile
+echo "export KUBECONFIG=${KUBECONFIG}" > $HOME/.profile
 
 # Add repositories
 # Kubernetes
@@ -29,15 +29,7 @@ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 sudo apt-get update
 
 # Install pre-reqs
-sudo apt-get -y install build-essential libffi-dev python python-dev python-pip automake autoconf libtool indent vim tmux xgrep jq #ctags
-
-# pre-reqs for installing docker
-sudo apt-get -y install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
+sudo apt-get -y install apt-transport-https xgrep jq
 
 # Disable swapoff
 sudo swapoff -a
@@ -71,6 +63,7 @@ sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/conf
 sudo systemctl daemon-reload
 sudo systemctl enable containerd
 sudo systemctl restart containerd
+sudo apt-mark hold containerd
 
 ##############
 # Kubernetes #
