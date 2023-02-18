@@ -1,5 +1,5 @@
-K8S_VERSION="1.26.1-00"
-#K8S_VERSION="1.24.3-00"
+#K8S_VERSION="1.26.1-00"
+K8S_VERSION="1.24.3-00"
 #K8S_VERSION="1.21.3-00"
 WORKINGDIR='/local/repository'
 username=$(id -un)
