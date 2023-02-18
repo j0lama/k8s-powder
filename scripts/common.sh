@@ -54,7 +54,10 @@ EOF
 # Apply sysctl parameters without reboot to current running enviroment
 sudo sysctl --system
 # Install containerd
-sudo apt-get install -y containerd
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update -y
+sudo apt install -y containerd.io
 # Create configuration file
 sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml
@@ -62,8 +65,8 @@ sudo containerd config default | sudo tee /etc/containerd/config.toml
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 # Restart containerd daemon
 sudo systemctl daemon-reload
-sudo systemctl enable containerd
 sudo systemctl restart containerd
+sudo systemctl enable containerd
 sudo apt-mark hold containerd
 
 ##############
