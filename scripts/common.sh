@@ -34,6 +34,8 @@ sudo apt-get -y install apt-transport-https xgrep jq
 
 # Disable swapoff
 sudo swapoff -a
+# Disable swap permanently
+sudo sed -e '/swap/ s/^#*/#/' -i /etc/fstab
 
 ##############
 # Containerd #
